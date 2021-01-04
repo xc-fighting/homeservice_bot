@@ -1,0 +1,8 @@
+prefix=/home/offworld/Desktop/homeservice/catkin_ws/devel
+
+Name: homeservice
+Description: Description of homeservice
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
