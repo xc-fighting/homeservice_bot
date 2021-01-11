@@ -207,6 +207,87 @@ collision_map_request.pb.cc.s:
 	cd /home/offworld/Desktop/homeservice/catkin_ws/build && $(MAKE) -f pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/build.make pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/collision_map_request.pb.cc.s
 .PHONY : collision_map_request.pb.cc.s
 
+header.pb.o: header.pb.cc.o
+
+.PHONY : header.pb.o
+
+# target to build an object file
+header.pb.cc.o:
+	cd /home/offworld/Desktop/homeservice/catkin_ws/build && $(MAKE) -f pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/build.make pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/header.pb.cc.o
+.PHONY : header.pb.cc.o
+
+header.pb.i: header.pb.cc.i
+
+.PHONY : header.pb.i
+
+# target to preprocess a source file
+header.pb.cc.i:
+	cd /home/offworld/Desktop/homeservice/catkin_ws/build && $(MAKE) -f pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/build.make pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/header.pb.cc.i
+.PHONY : header.pb.cc.i
+
+header.pb.s: header.pb.cc.s
+
+.PHONY : header.pb.s
+
+# target to generate assembly for a file
+header.pb.cc.s:
+	cd /home/offworld/Desktop/homeservice/catkin_ws/build && $(MAKE) -f pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/build.make pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/header.pb.cc.s
+.PHONY : header.pb.cc.s
+
+time.pb.o: time.pb.cc.o
+
+.PHONY : time.pb.o
+
+# target to build an object file
+time.pb.cc.o:
+	cd /home/offworld/Desktop/homeservice/catkin_ws/build && $(MAKE) -f pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/build.make pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/time.pb.cc.o
+.PHONY : time.pb.cc.o
+
+time.pb.i: time.pb.cc.i
+
+.PHONY : time.pb.i
+
+# target to preprocess a source file
+time.pb.cc.i:
+	cd /home/offworld/Desktop/homeservice/catkin_ws/build && $(MAKE) -f pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/build.make pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/time.pb.cc.i
+.PHONY : time.pb.cc.i
+
+time.pb.s: time.pb.cc.s
+
+.PHONY : time.pb.s
+
+# target to generate assembly for a file
+time.pb.cc.s:
+	cd /home/offworld/Desktop/homeservice/catkin_ws/build && $(MAKE) -f pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/build.make pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/time.pb.cc.s
+.PHONY : time.pb.cc.s
+
+vector2d.pb.o: vector2d.pb.cc.o
+
+.PHONY : vector2d.pb.o
+
+# target to build an object file
+vector2d.pb.cc.o:
+	cd /home/offworld/Desktop/homeservice/catkin_ws/build && $(MAKE) -f pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/build.make pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/vector2d.pb.cc.o
+.PHONY : vector2d.pb.cc.o
+
+vector2d.pb.i: vector2d.pb.cc.i
+
+.PHONY : vector2d.pb.i
+
+# target to preprocess a source file
+vector2d.pb.cc.i:
+	cd /home/offworld/Desktop/homeservice/catkin_ws/build && $(MAKE) -f pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/build.make pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/vector2d.pb.cc.i
+.PHONY : vector2d.pb.cc.i
+
+vector2d.pb.s: vector2d.pb.cc.s
+
+.PHONY : vector2d.pb.s
+
+# target to generate assembly for a file
+vector2d.pb.cc.s:
+	cd /home/offworld/Desktop/homeservice/catkin_ws/build && $(MAKE) -f pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/build.make pgm_map_creator/msgs/CMakeFiles/collision_map_creator_msgs.dir/vector2d.pb.cc.s
+.PHONY : vector2d.pb.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -224,6 +305,15 @@ help:
 	@echo "... collision_map_request.pb.o"
 	@echo "... collision_map_request.pb.i"
 	@echo "... collision_map_request.pb.s"
+	@echo "... header.pb.o"
+	@echo "... header.pb.i"
+	@echo "... header.pb.s"
+	@echo "... time.pb.o"
+	@echo "... time.pb.i"
+	@echo "... time.pb.s"
+	@echo "... vector2d.pb.o"
+	@echo "... vector2d.pb.i"
+	@echo "... vector2d.pb.s"
 .PHONY : help
 
 
