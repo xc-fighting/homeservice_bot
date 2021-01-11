@@ -17,8 +17,6 @@ nav_msgs/Odometry.h
 -
 std_msgs/Bool.h
 -
-vector
--
 
 /opt/ros/kinetic/include/actionlib_msgs/GoalID.h
 string

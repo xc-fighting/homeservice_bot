@@ -3,51 +3,56 @@
 #include <visualization_msgs/Marker.h>
 #include <nav_msgs/Odometry.h>
 #include <std_msgs/Bool.h>
-#include <vector>
+
 
 using namespace std;
 
-class AddMarkers
+class MarkerNode
 {
     public:
-        AddMarkers();
-        ~AddMarkers();
+        MarkerNode();
+        ~MarkerNode();
+        void init();
+        void start();
 
     private:
-        ros::NodeHandle n;
-        ros::Publisher marker_pub;
-        ros::Subscriber goal_sub;
-        ros::Subscriber odom_sub;
-        ros::Subscriber amcl_sub;
-        ros::Subscriber reached_sub;
+        ros::NodeHandle handle;
+        ros::Publisher markerPublisher;
+        ros::Subscriber goalSubscriber;
+        ros::Subscriber odomSubscriber;
+
         void odomCallBack( const nav_msgs::Odometry::ConstPtr &msg );
         void goalCallBack( const move_base_msgs::MoveBaseGoal &msg );
-        void amclPoseCallBack( const geometry_msgs::PoseWithCovariance &msg );
-        void reachedCallBack( const std_msgs::Bool::ConstPtr &msg ); 
-        vector<vector<float>> marker_locations{{ 1.0, 3.0, 1.0 },{ 4.0, 0.0, 1.0 }};
+
 
         visualization_msgs::Marker marker;
-        geometry_msgs::Pose robot_pose_;
-        geometry_msgs::Pose marker_pose_;
-        geometry_msgs::Pose amcl_marker_pose_;
-        bool reached_goal;
-        bool start = true;
-        bool pick_up = true;
-        bool searching = true;
-        bool changed = false;
-        bool atOrigin = true;
+        geometry_msgs::Pose robotPos;
+        geometry_msgs::Pose markerPos;
+
+
+        bool place_marker;
+        bool pick_up;
+        bool drop_off;
+        bool start_loop;
 
         bool closeToMarker( geometry_msgs::Pose robot_pose, geometry_msgs::Pose marker_pose );
 };
 
-AddMarkers::AddMarkers()
+MarkerNode::MarkerNode()
 {
+    ROS_INFO("Init the Marker Node");
+    start_loop = true;
+    place_marker = false;
+    pick_up = true;
+    drop_off = false;
+}
 
-    marker_pub = n.advertise<visualization_msgs::Marker>( "visualization_marker", 10 );
-    goal_sub = n.subscribe( "/goal", 1, &AddMarkers::goalCallBack, this );
-    odom_sub = n.subscribe( "/odom", 10, &AddMarkers::odomCallBack, this );
-    amcl_sub = n.subscribe( "amcl_pose", 10, &AddMarkers::amclPoseCallBack, this );
-    reached_sub = n.subscribe( "/reached", 10, &AddMarkers::reachedCallBack, this );
+void MarkerNode::init()
+{
+    markerPublisher = handle.advertise<visualization_msgs::Marker>( "visualization_marker", 10 );
+    goalSubscriber = handle.subscribe( "/goal", 1, &MarkerNode::goalCallBack, this );
+    odomSubscriber = handle.subscribe( "/odom", 10, &MarkerNode::odomCallBack, this );
+
 
     marker.header.frame_id = "map";
     marker.header.stamp = ros::Time::now();
@@ -55,109 +60,111 @@ AddMarkers::AddMarkers()
     marker.ns = "basic_shapes";
     marker.id = 0;
 
-    marker.type = visualization_msgs::Marker::SPHERE;
+    marker.type = visualization_msgs::Marker::CUBE;
 
-    marker.scale.x = 0.5;
-    marker.scale.y = 0.5;
-    marker.scale.z = 0.5;
+    marker.scale.x = 0.4;
+    marker.scale.y = 0.4;
+    marker.scale.z = 0.4;
 
-    marker.color.r = 0.0f;
-    marker.color.g = 1.0f;
-    marker.color.b = 1.0f;
+    marker.color.r = 1.0f;
+    marker.color.g = 0.0f;
+    marker.color.b = 0.0f;
     marker.color.a = 1.0f;
 
     marker.lifetime = ros::Duration();
 
-    while( true )
-    {
-        marker.pose = marker_pose_;
+
+}
+
+void MarkerNode::start()
+{
+     while( true )
+     {
+        marker.pose = markerPos;
         if( marker.pose.position.x == 0 && marker.pose.position.y == 0 )
         {
-            atOrigin = true;
+            start_loop = true;
         }
         else
         {
-            atOrigin = false;
+            start_loop = false;
         }
         
-        if( start && !atOrigin )
+        if( ( place_marker == true ) && ( start_loop == false ) )
         {
-            start = false;
+            place_marker = false;
             marker.action = visualization_msgs::Marker::ADD;
-            marker_pub.publish( marker );
+            markerPublisher.publish( marker );
         }
-        // cout << reached_goal << endl;
-        if( closeToMarker( robot_pose_, marker.pose ) && !atOrigin )
-        // if( reached_goal && !atOrigin )
+
+        if( closeToMarker( robotPos, marker.pose ) && start_loop == false )
         {
-            if( pick_up ) { // Picked up
-                sleep(5);
+            if( pick_up ) 
+            { 
+                ros::Duration(5.0).sleep();
                 ROS_INFO( "Picked up" );
                 marker.action = visualization_msgs::Marker::DELETE;
-                marker_pub.publish( marker );
+                markerPublisher.publish( marker );
                 pick_up = false;
             } 
-            if( changed ) {
+            if( drop_off ) 
+            {
                 ROS_INFO( "Dropping off" );
                 marker.action = visualization_msgs::Marker::ADD;
-                marker_pub.publish( marker );
-                sleep(10);
+                markerPublisher.publish( marker );
+                ros::Duration(10.0).sleep();
                 break;
             }
         }
         ros::spinOnce();
+     }
+}
+
+MarkerNode::~MarkerNode()
+{
+   ROS_INFO("Release the Marker Node");
+}
+
+void MarkerNode::odomCallBack( const nav_msgs::Odometry::ConstPtr &msg )
+{
+    this->robotPos = msg->pose.pose;
+}
+
+void MarkerNode::goalCallBack( const move_base_msgs::MoveBaseGoal &msg )
+{
+    markerPos = msg.target_pose.pose;
+    ROS_INFO( "goalCallBack: x=%f, y=%f, w=%f", markerPos.position.x, markerPos.position.y, markerPos.orientation.w);
+    if( pick_up == false )
+    {
+       drop_off = true;
     }
 }
 
-AddMarkers::~AddMarkers()
-{
 
-}
 
-void AddMarkers::odomCallBack( const nav_msgs::Odometry::ConstPtr &msg )
-{
-    robot_pose_ = msg->pose.pose;
-}
 
-void AddMarkers::goalCallBack( const move_base_msgs::MoveBaseGoal &msg )
+bool MarkerNode::closeToMarker( geometry_msgs::Pose robot_pose, geometry_msgs::Pose marker_pose )
 {
-    marker_pose_ = msg.target_pose.pose;
-    ROS_INFO( "goalCallBack: x=%f, y=%f, w=%f", marker_pose_.position.x, marker_pose_.position.y, marker_pose_.orientation.w);
-    if( !pick_up )
-        changed = true;
-}
-
-void AddMarkers::amclPoseCallBack( const geometry_msgs::PoseWithCovariance &msg)
-{
-    amcl_marker_pose_ = msg.pose;
-    ROS_INFO( "At amcl callback: %f, %f, %f", amcl_marker_pose_.position.x, amcl_marker_pose_.position.y, amcl_marker_pose_.orientation.w );
-}
-
-void AddMarkers::reachedCallBack( const std_msgs::Bool::ConstPtr &msg )
-{
-    reached_goal = msg->data;
-    ROS_INFO("reachedCallBack: %d", reached_goal);
-}
-
-bool AddMarkers::closeToMarker( geometry_msgs::Pose robot_pose, geometry_msgs::Pose marker_pose )
-{
-    float x_diff = robot_pose.position.x - marker_pose.position.x;
-    float y_diff = robot_pose.position.y - marker_pose.position.y;
-    float position_distance = sqrt( pow(x_diff, 2) + pow(y_diff, 2) );
-    float angle_diff = abs(robot_pose.orientation.w - marker_pose.orientation.w);
-    // ROS_INFO("robot_pose.position: %f %f %f",  robot_pose.position.x, robot_pose.position.y, robot_pose.orientation.w);
-    // ROS_INFO("marker_pose.position: %f %f %f",  marker_pose.position.x, marker_pose.position.y, marker_pose.orientation.w );
-    // ROS_INFO("differences: %f <= 0.3,  %f <= %f \n",  position_distance, angle_diff, M_PI/180);
-    if( position_distance <= 0.3 && angle_diff < M_PI/180 )
+    float dx = robotPos.position.x - markerPos.position.x;
+    float dy = robotPos.position.y - markerPos.position.y;
+    float dist = sqrt(pow(dx, 2) + pow(dy, 2));
+    float delta = abs(robotPos.orientation.w - markerPos.orientation.w);
+    if( dist <= 0.3 && delta < M_PI/180 )
     {
         return true;
     }
-    return false;
+    else
+    {
+        return false;
+    }
+    
 }
 
 int main( int argc, char** argv )
 {
     ros::init( argc, argv, "add_markers" );
-    AddMarkers addmarker;
+    MarkerNode node;
+    node.init();
+    node.start();
     return 0;
 }
