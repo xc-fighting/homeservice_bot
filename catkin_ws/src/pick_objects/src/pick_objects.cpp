@@ -14,7 +14,7 @@ int main(int argc, char** argv){
 
 
   ros::NodeHandle handle;
-  ros::Publisher goalPublisher = handle.advertise<geometry_msgs::Pose>("/goal",15);
+  ros::Publisher goalPublisher = handle.advertise<move_base_msgs::MoveBaseGoal>("/goal",15);
   
 
   //tell the action client that we want to spin a thread by default
@@ -28,7 +28,7 @@ int main(int argc, char** argv){
   move_base_msgs::MoveBaseGoal goal;
 
   // set up the frame parameters
-  goal.target_pose.header.frame_id = "map";
+  goal.target_pose.header.frame_id = "/map";
   goal.target_pose.header.stamp = ros::Time::now();
 
   

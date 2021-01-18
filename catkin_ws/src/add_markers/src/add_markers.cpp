@@ -42,7 +42,7 @@ MarkerNode::MarkerNode()
 {
     ROS_INFO("Init the Marker Node");
     start_loop = true;
-    place_marker = false;
+    place_marker = true;
     pick_up = true;
     drop_off = false;
 }
@@ -54,7 +54,7 @@ void MarkerNode::init()
     odomSubscriber = handle.subscribe( "/odom", 10, &MarkerNode::odomCallBack, this );
 
 
-    marker.header.frame_id = "map";
+    marker.header.frame_id = "/map";
     marker.header.stamp = ros::Time::now();
 
     marker.ns = "basic_shapes";
@@ -81,6 +81,7 @@ void MarkerNode::start()
      while( true )
      {
         marker.pose = markerPos;
+       
         if( marker.pose.position.x == 0 && marker.pose.position.y == 0 )
         {
             start_loop = true;
