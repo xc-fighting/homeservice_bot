@@ -98,7 +98,7 @@ void MarkerNode::start()
             markerPublisher.publish( marker );
         }
 
-        if( closeToMarker( robotPos, marker.pose ) && start_loop == false )
+        if( closeToMarker( this->robotPos, marker.pose ) && start_loop == false )
         {
             if( pick_up ) 
             { 
@@ -129,6 +129,7 @@ MarkerNode::~MarkerNode()
 void MarkerNode::odomCallBack( const nav_msgs::Odometry::ConstPtr &msg )
 {
     this->robotPos = msg->pose.pose;
+   // ROS_INFO( "odomCallBack: x=%f, y=%f, w=%f", robotPos.position.x, robotPos.position.y, robotPos.orientation.w);
 }
 
 void MarkerNode::goalCallBack( const move_base_msgs::MoveBaseGoal &msg )
@@ -146,10 +147,11 @@ void MarkerNode::goalCallBack( const move_base_msgs::MoveBaseGoal &msg )
 
 bool MarkerNode::closeToMarker( geometry_msgs::Pose robot_pose, geometry_msgs::Pose marker_pose )
 {
-    float dx = robotPos.position.x - markerPos.position.x;
-    float dy = robotPos.position.y - markerPos.position.y;
+    float dx = robot_pose.position.x - marker_pose.position.x;
+    float dy = robot_pose.position.y - marker_pose.position.y;
     float dist = sqrt(pow(dx, 2) + pow(dy, 2));
-    float delta = abs(robotPos.orientation.w - markerPos.orientation.w);
+    float delta = abs(robot_pose.orientation.w - marker_pose.orientation.w);
+   // printf("[chen xu log]:the dist and delta:%f,%f\n",dist,delta);
     if( dist <= 0.3 && delta < M_PI/180 )
     {
         return true;
